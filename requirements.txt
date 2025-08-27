@@ -1,0 +1,13 @@
+﻿pandas
+openpyxl
+python-docx
+PyPDF2
+spacy
+watchdog
+reportlab
+pyyaml
+flask
+python-dotenv
+
+# servidor WSGI para deploy
+gunicorn

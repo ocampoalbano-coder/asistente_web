@@ -1,0 +1,7 @@
+﻿entities:
+  software: "(Excel|Notion|AutoCAD|Photoshop|Trello|Slack|SAP|Zoho)"
+  empresa: "\\b([A-Z][A-Za-z0-9&\\-\\s]{2,})\\s+(S\\.?A\\.?|S\\.?R\\.?L\\.?|LLC|Inc\\.?)\\b"
+  contacto: "([A-ZÃÃ‰ÃÃ“ÃšÃ‘][a-zÃ¡Ã©Ã­Ã³ÃºÃ±]+(?:\\s+[A-ZÃÃ‰ÃÃ“ÃšÃ‘][a-zÃ¡Ã©Ã­Ã³ÃºÃ±]+){1,2})"
+router:
+  reporte: ["reporte","excel","resumen","csv","ventas","stock"]
+  extraer: ["extrae","extraer","empresas","contactos","software"]

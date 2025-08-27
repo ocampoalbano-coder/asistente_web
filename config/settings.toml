@@ -1,0 +1,6 @@
+﻿[salida]
+dir = "salida"
+
+[features]
+generate_pdf = false
+language = "es"

@@ -1,0 +1,29 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Asistente Web — Reportes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <div class="card">
+      <h1>Generar reporte</h1>
+      <p class="muted">Sube un archivo <strong>CSV/XLSX</strong> con columnas <code>categoria</code> y <code>monto</code>. Elige formato de salida.</p>
+
+      {% if error %}
+        <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      <form class="form" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv,.xlsx" required>
+        <select name="formato" required>
+          <option value="excel" selected>Excel (.xlsx)</option>
+          <option value="pdf">PDF (.pdf)</option>
+          <option value="ambos">Ambos (Excel + PDF)</option>
+        </select>
+        <button type="submit">Generar</button>
+      </form>
+    </div>
+  </body>
+</html>

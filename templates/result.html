@@ -1,0 +1,22 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Resultados</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <div class="card">
+      <h1>Resultados</h1>
+      <p class="muted">Tus archivos están listos para descargar.</p>
+      <div class="links">
+        {% if excel %}<a class="btn" href="{{ url_for('download', fname=excel) }}">⬇️ Descargar Excel</a>{% endif %}
+        {% if pdf %}<a class="btn" href="{{ url_for('download', fname=pdf) }}">⬇️ Descargar PDF</a>{% endif %}
+      </div>
+      <div class="links" style="margin-top:18px">
+        <a class="btn" href="{{ url_for('index') }}">← Volver</a>
+      </div>
+    </div>
+  </body>
+</html>
