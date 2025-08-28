@@ -45,9 +45,9 @@ def index():
             # --- SUBIDA DE ARCHIVO ---
             f = request.files.get("file")
             if not f or not f.filename:
-                return render_template("index.html", error="Sube un archivo o usa el botón DEMO.")
+                return render_template("index.html", error="Sube un archivo o usa el botÃ³n DEMO.")
             if not (f.filename.lower().endswith(".csv") or f.filename.lower().endswith(".xlsx")):
-                return render_template("index.html", error="Formato inválido. Solo CSV o XLSX.")
+                return render_template("index.html", error="Formato invÃ¡lido. Solo CSV o XLSX.")
 
             save_path = UPLOAD_DIR / f.filename
             save_path.parent.mkdir(parents=True, exist_ok=True)
@@ -60,7 +60,7 @@ def index():
                 csv_path = save_path.with_suffix(".csv")
                 df_x.to_csv(csv_path, index=False)
 
-        # validación mínima de columnas
+        # validaciÃ³n mÃ­nima de columnas
         try:
             try:
                 df = pd.read_csv(csv_path)
@@ -91,6 +91,11 @@ def index():
 @app.route("/download/<path:fname>")
 def download(fname: str):
     return send_from_directory(OUT_DIR, fname, as_attachment=True)
+
+
+@app.route("/healthz")
+def healthz():
+    return {"status": "ok"}, 200
 
 
 if __name__ == "__main__":
