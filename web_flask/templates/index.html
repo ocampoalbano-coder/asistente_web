@@ -1,15 +1,31 @@
 ﻿<!doctype html>
-<html>
+<html lang="es">
   <head>
-    <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Generador de Reportes</title>
-    <style>body{font-family:sans-serif;max-width:680px;margin:40px auto}input[type=file]{margin:12px 0}</style>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Asistente Web — Reportes</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
   <body>
-    <h1>Generar Reporte (CSV/XLSX â†’ Excel)</h1>
-    <form method="POST" enctype="multipart/form-data">
-      <input type="file" name="file" accept=".csv,.xlsx" required />
-      <button type="submit">Procesar</button>
-    </form>
+    <div class="card">
+      <h1>Generar reporte</h1>
+      <p class="muted">Sube un archivo <strong>CSV/XLSX</strong> con columnas <code>categoria</code> y <code>monto</code>. O bien prueba con datos de demo.</p>
+
+      {% if error %}
+        <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      <form class="form" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv,.xlsx">
+        <select name="formato" required>
+          <option value="excel" selected>Excel (.xlsx)</option>
+          <option value="pdf">PDF (.pdf)</option>
+          <option value="ambos">Ambos (Excel + PDF)</option>
+        </select>
+        <button type="submit">Generar</button>
+        <button type="submit" name="demo" value="1">Usar demo (prueba)</button>
+      </form>
+    </div>
   </body>
 </html>
