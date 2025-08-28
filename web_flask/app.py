@@ -1,7 +1,9 @@
-﻿from flask import Flask, render_template, request, send_from_directory
+import os
+import sys
 from pathlib import Path
-import os, sys
+
 import pandas as pd
+from flask import Flask, render_template, request, send_from_directory
 
 # asegurar que el paquete core sea visible
 sys.path.append(str(Path(__file__).resolve().parents[1]))
@@ -12,11 +14,12 @@ from core.utils import ensure_dirs
 
 ROOT = Path(__file__).resolve().parents[1]
 UPLOAD_DIR = ROOT / "data"
-OUT_DIR    = ROOT / "salida"
+OUT_DIR = ROOT / "salida"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__, template_folder="../templates", static_folder="../static")
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -25,13 +28,15 @@ def index():
 
         # --- MODO DEMO ---
         if request.form.get("demo"):
-            df_demo = pd.DataFrame([
-                {"id":1,"categoria":"Software","monto":120},
-                {"id":2,"categoria":"Servicios","monto":80},
-                {"id":3,"categoria":"Software","monto":50},
-                {"id":4,"categoria":"Marketing","monto":200},
-                {"id":5,"categoria":"Servicios","monto":20},
-            ])
+            df_demo = pd.DataFrame(
+                [
+                    {"id": 1, "categoria": "Software", "monto": 120},
+                    {"id": 2, "categoria": "Servicios", "monto": 80},
+                    {"id": 3, "categoria": "Software", "monto": 50},
+                    {"id": 4, "categoria": "Marketing", "monto": 200},
+                    {"id": 5, "categoria": "Servicios", "monto": 20},
+                ]
+            )
             demo_csv = UPLOAD_DIR / "demo.csv"
             demo_csv.parent.mkdir(parents=True, exist_ok=True)
             df_demo.to_csv(demo_csv, index=False, encoding="utf-8")
@@ -65,7 +70,9 @@ def index():
             return render_template("index.html", error=f"Error leyendo el archivo: {e}")
 
         if "categoria" not in df.columns or "monto" not in df.columns:
-            return render_template("index.html", error="El archivo debe tener columnas 'categoria' y 'monto'.")
+            return render_template(
+                "index.html", error="El archivo debe tener columnas 'categoria' y 'monto'."
+            )
 
         # generar salidas
         excel_name = pdf_name = None
@@ -80,11 +87,12 @@ def index():
 
     return render_template("index.html")
 
+
 @app.route("/download/<path:fname>")
 def download(fname: str):
     return send_from_directory(OUT_DIR, fname, as_attachment=True)
 
+
 if __name__ == "__main__":
     ensure_dirs()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
-

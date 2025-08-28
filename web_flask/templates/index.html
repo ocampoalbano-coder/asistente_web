@@ -13,7 +13,7 @@
       <p class="muted">Sube un archivo <strong>CSV/XLSX</strong> con columnas <code>categoria</code> y <code>monto</code>. O bien prueba con datos de demo.</p>
 
       {% if error %}
-        <div class="alert">{{ error }}</div>
+        <div class="alert">{{ error|safe }}</div>
       {% endif %}
 
       <form class="form" method="POST" enctype="multipart/form-data">
@@ -29,3 +29,4 @@
     </div>
   </body>
 </html>
+

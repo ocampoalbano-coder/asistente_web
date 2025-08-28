@@ -1,12 +1,14 @@
-﻿from __future__ import annotations
-from pathlib import Path
+from __future__ import annotations
+
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
 
 def generar_pdf(csv_path: Path) -> Path:
     csv_path = Path(csv_path)
@@ -26,8 +28,8 @@ def generar_pdf(csv_path: Path) -> Path:
     df["monto"] = pd.to_numeric(df["monto"], errors="coerce").fillna(0)
     resumen = (
         df.groupby("categoria", dropna=False)["monto"]
-          .agg(monto_total="sum", items="count")
-          .reset_index()
+        .agg(monto_total="sum", items="count")
+        .reset_index()
     )
 
     out_pdf = out_dir / f"reporte_{datetime.now():%Y%m%d_%H%M%S}.pdf"
@@ -42,15 +44,20 @@ def generar_pdf(csv_path: Path) -> Path:
 
     data = [["categoria", "monto_total", "items"]] + resumen.values.tolist()
     table = Table(data, hAlign="LEFT")
-    table.setStyle(TableStyle([
-        ("BACKGROUND", (0,0), (-1,0), colors.lightblue),
-        ("TEXTCOLOR", (0,0), (-1,0), colors.whitesmoke),
-        ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
-        ("ALIGN", (1,1), (-1,-1), "RIGHT"),
-        ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
-        ("ROWBACKGROUNDS", (0,1), (-1,-1), [colors.whitesmoke, colors.lightgrey]),
-        ("LEFTPADDING",(0,0),(-1,-1),6), ("RIGHTPADDING",(0,0),(-1,-1),6)
-    ]))
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.lightblue),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
     elems.append(table)
 
     doc.build(elems)
