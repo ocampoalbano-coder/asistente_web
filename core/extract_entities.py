@@ -55,3 +55,23 @@ def extract_to_excel(text: str):
     out_json = stamp("entidades", "json")
     Path(out_json).write_text(json.dumps(ents, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"excel": writer_path, "json": out_json}
+
+
+# --- lazy import para evitar sobrecarga en boot (Render) ---
+_nlp = None
+
+
+def _lazy_spacy():
+    global _nlp
+    if _nlp is None:
+        import spacy  # import pesado
+
+        # usa modelo pequeño o por defecto si aplica; si no, carga idioma básico
+        try:
+            _nlp = spacy.load("es_core_news_sm")
+        except Exception:
+            _nlp = spacy.blank("es")
+    return _nlp
+
+
+# -----------------------------------------------------------

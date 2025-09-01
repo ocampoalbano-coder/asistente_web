@@ -13,3 +13,4 @@ python-dotenv
 gunicorn
 
 XlsxWriter>=3.2.0
+xlsxwriter
