@@ -1,4 +1,4 @@
-﻿[![CI](https://github.com/ocampoalbano-coder/asistente_web/actions/workflows/ci.yml/badge.svg)] ![Coverage](https://img.shields.io/badge/coverage-64%25-yellow)(https://github.com/ocampoalbano-coder/asistente_web/actions/workflows/ci.yml)
+﻿[![CI](https://github.com/ocampoalbano-coder/asistente_web/actions/workflows/ci.yml/badge.svg)] [![codecov](https://codecov.io/gh/ocampoalbano-coder/asistente_web/branch/main/graph/badge.svg)](https://codecov.io/gh/ocampoalbano-coder/asistente_web)(https://github.com/ocampoalbano-coder/asistente_web/actions/workflows/ci.yml)
 
 # Mercury AI — Avance hasta Nivel 3
 
@@ -22,5 +22,6 @@
 - Despliegue gratuito (Render/Railway/PythonAnywhere) usando Gunicorn.
 - Ajustes de producción (Procfile listo, requirements verificados).
 - Opcional: empaquetar CLI y subir cobertura de tests (router/extract_entities/docs_reader).
+
 
 
