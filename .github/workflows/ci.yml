@@ -36,8 +36,20 @@ jobs:
           pytest --maxfail=1 -q
           pytest --cov=web_flask --cov=core --cov-report=xml:coverage.xml -q
 
-      - name: Upload coverage.xml
+      
+      - name: Build ZIP artifact
+        run: |
+          stamp=\
+          zip="build_\20250901_074044.zip"
+          7z a -tzip "\build_20250901_074044.zip" core web_flask templates static requirements.txt Procfile .pre-commit-config.yaml .editorconfig .gitattributes README.md VERSION CHANGELOG.md -mx=9 || true
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: asistente_web-build
+          path: build_*.zip- name: Upload coverage.xml
         uses: actions/upload-artifact@v4
         with:
           name: coverage-xml
           path: coverage.xml
+
