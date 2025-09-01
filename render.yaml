@@ -6,7 +6,5 @@
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn web_flask.app:app --bind 0.0.0.0:$PORT --workers=2 --threads=4 --timeout=120
     autoDeploy: true
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
-    healthCheckPath: /healthz
+    envVars:`n      - key: PYTHON_VERSION`n        value: 3.11.9`n      - key: OUTPUT_DIR`n        value: /tmp/salida`n\2
+

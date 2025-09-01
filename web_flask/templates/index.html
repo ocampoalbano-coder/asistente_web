@@ -1,32 +1,33 @@
-﻿<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <title>Asistente Web — Reportes</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  </head>
-  <body>
-    <div class="card">
-      <h1>Generar reporte</h1>
-      <p class="muted">Sube un archivo <strong>CSV/XLSX</strong> con columnas <code>categoria</code> y <code>monto</code>. O bien prueba con datos de demo.</p>
+﻿{% extends "base.html" %}
+{% block content %}
+  <h1>Generar reporte</h1>
+  <p class="muted">Sube un archivo <b>CSV/XLSX</b> con columnas <code>categoria</code> y <code>monto</code>.
+  O bien prueba con datos de demo.</p>
 
-      {% if error %}
-        <div class="alert">{{ error|safe }}</div>
-      {% endif %}
+  {% if error %}
+    <div class="alert" style="border-color:rgba(255,107,107,.5)">{{ error|safe }}</div>
+  {% endif %}
 
-      <form class="form" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".csv,.xlsx">
-        <select name="formato" required>
+  <form id="form" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="demo" id="demo-hidden" value="0"/>
+    <div class="row">
+      <label class="drop" for="file">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#7af7c3" aria-hidden="true"><path d="M19 15a4 4 0 0 0-3.87-4A6 6 0 0 0 5 11a4 4 0 0 0 0 8h12a3 3 0 0 0 2-5zM12 6l-3 3h2v4h2V9h2z"/></svg>
+        <input id="file" name="file" type="file" accept=".csv,.xlsx"/>
+        <span id="file-label">Arrastrá tu archivo aquí o haz click</span>
+      </label>
+
+      <div class="select">
+        <select name="formato" aria-label="Formato de salida">
           <option value="excel" selected>Excel (.xlsx)</option>
           <option value="pdf">PDF (.pdf)</option>
-          <option value="ambos">Ambos (Excel + PDF)</option>
+          <option value="ambos">Excel + PDF</option>
         </select>
-        <button type="submit">Generar</button>
-        <button type="submit" name="demo" value="1">Usar demo (prueba)</button>
-      </form>
+        <div class="actions">
+          <button class="btn" type="submit"><span>Generar</span></button>
+          <button class="btn" id="demo-btn" type="button"><span>Usar demo (prueba)</span></button>
+        </div>
+      </div>
     </div>
-  </body>
-</html>
-
+  </form>
+{% endblock %}

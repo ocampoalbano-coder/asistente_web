@@ -1,0 +1,58 @@
+﻿:root{
+  --bg:#0e1220; --card:#161b2b; --muted:#8da2b8; --text:#e8eff9;
+  --grad:linear-gradient(90deg,#59f,#7af7c3);
+  --ok:#1db954; --warn:#e5b82e; --err:#ff6b6b;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:var(--text);background:radial-gradient(60% 60% at 20% 20%,#101730 0,#0b0f1c 100%);
+}
+a{color:#8ad7ff;text-decoration:none}
+.container{max-width:900px;margin:6rem auto;padding:0 1rem}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:18px; padding:32px; box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+h1{margin:0 0 12px 0;font-weight:750;letter-spacing:.2px}
+.muted{color:var(--muted);margin-bottom:22px}
+.row{display:grid;gap:14px}
+input[type="file"]{display:none}
+.drop{
+  border:2px dashed rgba(255,255,255,.15); border-radius:14px; padding:24px;
+  display:flex; align-items:center; gap:12px; background:#10162b; color:var(--muted);
+}
+.drop.drag{border-color:#7af7c3; background:#0f1a2f}
+.select{display:flex; gap:10px}
+select{
+  background:#0f1628; color:var(--text); border:1px solid rgba(255,255,255,.08);
+  padding:12px 14px; border-radius:10px; width:220px;
+}
+.btn{
+  appearance:none; border:0; border-radius:999px; padding:14px 18px;
+  background:var(--grad); color:#072; color:#0720; color:#071; /* keep antialiasing */
+  color:#071; /* override to avoid HDR flicker */
+  color:#052; /* fallback */
+  color:#052; font-weight:700; letter-spacing:.2px; color:#041; /* final text via overlay */
+  position:relative; overflow:hidden; color:#041;
+}
+.btn span{position:relative; z-index:2; color:#071}
+.btn::before{
+  content:""; position:absolute; inset:0; background:var(--grad); opacity:.95; z-index:1
+}
+.btn:active{transform:translateY(1px)}
+.actions{display:flex; flex-wrap:wrap; gap:12px}
+.alert{
+  padding:12px 14px; border-radius:10px; background:#0f1628; border:1px solid rgba(255,255,255,.08);
+}
+.alert.ok{border-color:rgba(29,185,84,.4)}
+.links{display:flex; gap:10px; flex-wrap:wrap}
+a.btn-link{
+  display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:999px;
+  background:rgba(255,255,255,.06); color:var(--text)
+}
+table{border-collapse:collapse; font-size:15px}
+th,td{padding:10px 12px; border:1px solid rgba(255,255,255,.12)}
+th{background:#1a233b}

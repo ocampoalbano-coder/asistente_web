@@ -11,3 +11,5 @@ python-dotenv
 
 # servidor WSGI para deploy
 gunicorn
+
+XlsxWriter>=3.2.0

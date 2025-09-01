@@ -2,7 +2,6 @@ import os
 import sys
 from pathlib import Path
 
-import pandas as pd
 from flask import Flask, render_template, request, send_from_directory
 
 # asegurar que el paquete core sea visible
@@ -10,92 +9,121 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from core.excel_reports import generar_reporte
 from core.pdf_reports import generar_pdf
-from core.utils import ensure_dirs
+from core.utils import OUT_DIR, ensure_dirs
 
-ROOT = Path(__file__).resolve().parents[1]
-UPLOAD_DIR = ROOT / "data"
-OUT_DIR = ROOT / "salida"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-OUT_DIR.mkdir(parents=True, exist_ok=True)
-
-app = Flask(__name__, template_folder="../templates", static_folder="../static")
+app = Flask(__name__)
 
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        formato = (request.form.get("formato") or "excel").lower()
-
-        # --- MODO DEMO ---
-        if request.form.get("demo"):
-            df_demo = pd.DataFrame(
-                [
-                    {"id": 1, "categoria": "Software", "monto": 120},
-                    {"id": 2, "categoria": "Servicios", "monto": 80},
-                    {"id": 3, "categoria": "Software", "monto": 50},
-                    {"id": 4, "categoria": "Marketing", "monto": 200},
-                    {"id": 5, "categoria": "Servicios", "monto": 20},
-                ]
-            )
-            demo_csv = UPLOAD_DIR / "demo.csv"
-            demo_csv.parent.mkdir(parents=True, exist_ok=True)
-            df_demo.to_csv(demo_csv, index=False, encoding="utf-8")
-            csv_path = demo_csv
-        else:
-            # --- SUBIDA DE ARCHIVO ---
-            f = request.files.get("file")
-            if not f or not f.filename:
-                return render_template("index.html", error="Sube un archivo o usa el botÃ³n DEMO.")
-            if not (f.filename.lower().endswith(".csv") or f.filename.lower().endswith(".xlsx")):
-                return render_template("index.html", error="Formato invÃ¡lido. Solo CSV o XLSX.")
-
-            save_path = UPLOAD_DIR / f.filename
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-            f.save(save_path)
-
-            # convertir xlsx -> csv si hace falta
-            csv_path = save_path
-            if save_path.suffix.lower() == ".xlsx":
-                df_x = pd.read_excel(save_path)
-                csv_path = save_path.with_suffix(".csv")
-                df_x.to_csv(csv_path, index=False)
-
-        # validaciÃ³n mÃ­nima de columnas
-        try:
-            try:
-                df = pd.read_csv(csv_path)
-            except UnicodeDecodeError:
-                df = pd.read_csv(csv_path, encoding="latin-1")
-        except Exception as e:
-            return render_template("index.html", error=f"Error leyendo el archivo: {e}")
-
-        if "categoria" not in df.columns or "monto" not in df.columns:
-            return render_template(
-                "index.html", error="El archivo debe tener columnas 'categoria' y 'monto'."
-            )
-
-        # generar salidas
-        excel_name = pdf_name = None
-        if formato in ("excel", "ambos"):
-            xlsx = generar_reporte(csv_path)
-            excel_name = Path(xlsx).name
-        if formato in ("pdf", "ambos"):
-            pdf = generar_pdf(csv_path)
-            pdf_name = Path(pdf).name
-
-        return render_template("result.html", excel=excel_name, pdf=pdf_name)
-
+@app.get("/")
+def home():
     return render_template("index.html")
 
 
-@app.route("/download/<path:fname>")
+@app.post("/")
+def index():
+    try:
+        formato = request.form.get("formato", "excel")
+        demo = request.form.get("demo", "0") == "1"
+
+        ensure_dirs()
+
+        # CSV de entrada (demo o upload)
+        if demo:
+            import pandas as pd
+
+            df = pd.DataFrame(
+                [
+                    {"categoria": "Ventas", "monto": 1200},
+                    {"categoria": "Marketing", "monto": 300},
+                    {"categoria": "Operaciones", "monto": 700},
+                ]
+            )
+            csv_path = OUT_DIR / "demo.csv"
+            df.to_csv(csv_path, index=False, encoding="utf-8")
+        else:
+            f = request.files.get("file")
+            if not f or not f.filename:
+                return render_template(
+                    "index.html", error="Sube un archivo .csv o usa el botón de demo."
+                )
+            csv_path = OUT_DIR / "upload.csv"
+            f.save(str(csv_path))
+        # --- Normalizar y validar columnas requeridas para reportes ---
+        import pandas as pd
+
+        try:
+            if Path(csv_path).suffix.lower() in (".xlsx", ".xls"):
+                df_in = pd.read_excel(csv_path, engine="openpyxl")
+            else:
+                try:
+                    # Autodetecta separador (;, , \t). engine=python para sep=None
+                    df_in = pd.read_csv(csv_path, sep=None, engine="python", encoding="utf-8")
+                except Exception:
+                    # Fallback común en ES: punto y coma
+                    df_in = pd.read_csv(csv_path, sep=";", engine="python", encoding="utf-8")
+        except Exception:
+            # Si todo falla, intento final como Excel por si la extensión engaña
+            df_in = pd.read_excel(csv_path, engine="openpyxl")
+
+        # Validación case-insensitive
+        cols_lower = [str(c).lower() for c in df_in.columns]
+        required = {"categoria", "monto"}
+        if not required.issubset(set(cols_lower)):
+            return render_template("index.html", error="debe tener columnas 'categoria' y 'monto'")
+
+        # Renombrar a minúsculas para uso consistente y persistir CSV normalizado
+        df_in.columns = cols_lower
+        norm_csv = OUT_DIR / "norm.csv"
+        df_in.to_csv(norm_csv, index=False, encoding="utf-8")
+        csv_path = norm_csv
+        excel_name = None
+        pdf_name = None
+
+        if formato in ("excel", "ambos"):
+            xlsx = generar_reporte(csv_path)
+            excel_name = xlsx.name
+
+        if formato in ("pdf", "ambos"):
+            pdf = generar_pdf(csv_path)
+            pdf_name = pdf.name
+
+        return render_template("result.html", excel=excel_name, pdf=pdf_name)
+    except Exception as e:
+        # Log en consola para que PyTest lo capture
+        import sys
+        import traceback
+
+        print("!! ERROR en POST /:", e, file=sys.stderr)
+        traceback.print_exc()
+        return render_template("index.html", error=f"Error procesando el reporte: {e}")
+
+
+@app.get("/download/<path:fname>")
 def download(fname: str):
-    return send_from_directory(OUT_DIR, fname, as_attachment=True)
+    # Sirve archivos generados en OUT_DIR (Render usa /tmp/salida)
+    return send_from_directory(str(OUT_DIR), fname, as_attachment=True)
 
 
-@app.route("/healthz")
+@app.get("/healthz")
 def healthz():
     return {"status": "ok"}, 200
+
+
+@app.get("/debugz")
+def debugz():
+    try:
+        ensure_dirs()
+        files = sorted([p.name for p in OUT_DIR.glob("*")])
+        return {
+            "OUT_DIR": str(OUT_DIR),
+            "exists": OUT_DIR.exists(),
+            "is_dir": OUT_DIR.is_dir(),
+            "files": files,
+            "cwd": os.getcwd(),
+            "env_OUTPUT_DIR": os.environ.get("OUTPUT_DIR"),
+        }, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 if __name__ == "__main__":
