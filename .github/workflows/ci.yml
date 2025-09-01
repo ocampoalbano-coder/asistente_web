@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,13 +18,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
+          cache: pip
 
       - name: Install deps
         run: |
           python -m pip install -U pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+          sudo apt-get update
+          sudo apt-get install -y zip
 
       - name: Lint (ruff)
         run: python -m ruff check . --output-format=github
@@ -36,20 +39,31 @@ jobs:
           pytest --maxfail=1 -q
           pytest --cov=web_flask --cov=core --cov-report=xml:coverage.xml -q
 
-      
-      - name: Build ZIP artifact
-        run: |
-          stamp=\
-          zip="build_\20250901_074044.zip"
-          7z a -tzip "\build_20250901_074044.zip" core web_flask templates static requirements.txt Procfile .pre-commit-config.yaml .editorconfig .gitattributes README.md VERSION CHANGELOG.md -mx=9 || true
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: asistente_web-build
-          path: build_*.zip- name: Upload coverage.xml
+      - name: Upload coverage.xml
         uses: actions/upload-artifact@v4
         with:
           name: coverage-xml
           path: coverage.xml
 
+      # Si el repo es público, podés quitar la línea "token:".
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Build ZIP artifact
+        run: |
+          STAMP=$(date +'%Y%m%d_%H%M%S')
+          ZIP="build_${STAMP}.zip"
+          # Empaquetar solo archivos trackeados: evita fallas si falta alguno
+          git ls-files core web_flask templates static requirements.txt Procfile .pre-commit-config.yaml .editorconfig .gitattributes README.md VERSION CHANGELOG.md \
+            | zip -@ "${ZIP}"
+          ls -lh "${ZIP}"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: asistente_web-build
+          path: build_*.zip
