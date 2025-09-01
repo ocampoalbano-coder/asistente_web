@@ -1,0 +1,4 @@
+﻿ruff==0.12.11
+black==25.1.0
+pytest==8.3.4
+pytest-cov==5.0.0
