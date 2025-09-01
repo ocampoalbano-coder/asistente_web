@@ -5,3 +5,7 @@ __pycache__/
 /.env
 
 build_*.zip
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
