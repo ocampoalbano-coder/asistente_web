@@ -75,8 +75,8 @@ def index():
 
             df_in = pd.DataFrame(
                 [
-                    {"cliente": "ACME", "monto": 1000},
-                    {"cliente": "Globex", "monto": 800},
+                    {"categoria": "Software", "monto": 1000},
+                    {"categoria": "Servicios", "monto": 800},
                 ]
             )
             os.makedirs(OUT_DIR, exist_ok=True)
@@ -96,15 +96,30 @@ def index():
             csv_path = os.path.join(OUT_DIR, "upload.csv")
             f.save(csv_path)
 
-        # 2) Generar outputs (wrappers retornan rutas CANÓNICAS en OUT_DIR)
+        # 2) Validación de columnas requeridas (mensaje EXACTO que espera el test)
+        try:
+            import pandas as pd
+
+            cols = list(pd.read_csv(csv_path, nrows=0).columns)
+            norm = [c.strip().lower() for c in cols]
+            if not {"categoria", "monto"}.issubset(set(norm)):
+                return render_template(
+                    "index.html", error="CSV debe tener columnas 'categoria' y 'monto'."
+                )
+        except Exception:
+            return render_template(
+                "index.html", error="No se pudo leer el CSV (verifica formato UTF-8 y separadores)."
+            )
+
+        # 3) Generar outputs (wrappers retornan rutas CANÓNICAS en OUT_DIR)
         xlsx = generar_reporte(csv_path) if formato in ("excel", "ambos") else None
         pdf = generar_pdf(csv_path) if with_pdf else None
 
-        # 3) Basenames canónicos (por hash)
+        # 4) Basenames canónicos (por hash)
         excel_name = os.path.basename(xlsx) if xlsx else None
         pdf_name = os.path.basename(pdf) if pdf else None
 
-        # 4) Links de descarga (compat con template)
+        # 5) Links de descarga (compat con template)
         links = []
         if excel_name:
             links.append(("Excel", url_for("download", filename=excel_name)))
@@ -130,7 +145,7 @@ def download(filename):
     if os.path.exists(full_tmp):
         return send_from_directory(tmp, filename, as_attachment=True)
 
-    # Fallback adicional: si pidieron un 'reporte_*' inexistente, servir el mÃƒÂ¡s reciente con misma extensiÃƒÂ³n
+    # Fallback adicional: si pidieron un 'reporte_*' inexistente, servir el mÃƒÆ’Ã‚Â¡s reciente con misma extensiÃƒÆ’Ã‚Â³n
     try:
         import glob
 
