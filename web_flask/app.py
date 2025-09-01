@@ -71,7 +71,7 @@ def index():
 
         # 1) Obtener csv_path (demo o upload)
         if demo:
-            # Generás el CSV demo como lo hacías antes (adaptá si tenés helper)
+            # GenerÃ¡s el CSV demo como lo hacÃ­as antes (adaptÃ¡ si tenÃ©s helper)
             import pandas as pd
 
             df_in = pd.DataFrame(
@@ -92,11 +92,11 @@ def index():
             csv_path = os.path.join(OUT_DIR, "upload.csv")
             f.save(csv_path)
 
-        # 2) Generar outputs (los wrappers retornan rutas CANÓNICAS en OUT_DIR)
+        # 2) Generar outputs (los wrappers retornan rutas CANÃ“NICAS en OUT_DIR)
         xlsx = generar_reporte(csv_path) if formato in ("excel", "ambos") else None
         pdf = generar_pdf(csv_path) if with_pdf else None
 
-        # 3) Basenames canónicos (por hash)
+        # 3) Basenames canÃ³nicos (por hash)
         excel_name = os.path.basename(xlsx) if xlsx else None
         pdf_name = os.path.basename(pdf) if pdf else None
 
@@ -117,10 +117,10 @@ def index():
                 )
             )
 
-        return render_template("result.html", links=links)
+        return render_template("result.html", excel=excel_name, pdf=pdf_name, links=links)
     except Exception as e:
         logging.getLogger("error").error(f"POST / error: {type(e).__name__}: {e}")
-        return render_template("index.html", error="Ocurrió un error procesando el archivo.")
+        return render_template("index.html", error="OcurriÃ³ un error procesando el archivo.")
 
 
 @app.route("/download/<path:filename>")
@@ -136,7 +136,7 @@ def download(filename):
     if os.path.exists(full_tmp):
         return send_from_directory(tmp, filename, as_attachment=True)
 
-    # Fallback adicional: si pidieron un 'reporte_*' inexistente, servir el más reciente con misma extensión
+    # Fallback adicional: si pidieron un 'reporte_*' inexistente, servir el mÃ¡s reciente con misma extensiÃ³n
     try:
         import glob
 
