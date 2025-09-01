@@ -1,0 +1,19 @@
+﻿name: Deploy (Render)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar deploy en Render
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            echo "Falta secret RENDER_DEPLOY_HOOK"; exit 1
+          fi
+          curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
