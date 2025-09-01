@@ -71,7 +71,6 @@ def index():
 
         # 1) Obtener csv_path (demo o upload)
         if demo:
-            # GenerÃ¡s el CSV demo como lo hacÃ­as antes (adaptÃ¡ si tenÃ©s helper)
             import pandas as pd
 
             df_in = pd.DataFrame(
@@ -85,42 +84,37 @@ def index():
             df_in.to_csv(norm_csv, index=False, encoding="utf-8")
             csv_path = norm_csv
         else:
-            f = request.files.get("archivo")
+            # soporta nombres de campo: "archivo", "file" o "csv"
+            f = (
+                request.files.get("archivo")
+                or request.files.get("file")
+                or request.files.get("csv")
+            )
             if not f:
                 return render_template("index.html", error="Seleccione un archivo CSV.")
             os.makedirs(OUT_DIR, exist_ok=True)
             csv_path = os.path.join(OUT_DIR, "upload.csv")
             f.save(csv_path)
 
-        # 2) Generar outputs (los wrappers retornan rutas CANÃ“NICAS en OUT_DIR)
+        # 2) Generar outputs (wrappers retornan rutas CANÓNICAS en OUT_DIR)
         xlsx = generar_reporte(csv_path) if formato in ("excel", "ambos") else None
         pdf = generar_pdf(csv_path) if with_pdf else None
 
-        # 3) Basenames canÃ³nicos (por hash)
+        # 3) Basenames canónicos (por hash)
         excel_name = os.path.basename(xlsx) if xlsx else None
         pdf_name = os.path.basename(pdf) if pdf else None
 
-        # 4) Links de descarga
+        # 4) Links de descarga (compat con template)
         links = []
         if excel_name:
-            links.append(
-                (
-                    "Excel",
-                    url_for("download", filename=excel_name),
-                )
-            )
+            links.append(("Excel", url_for("download", filename=excel_name)))
         if pdf_name:
-            links.append(
-                (
-                    "PDF",
-                    url_for("download", filename=pdf_name),
-                )
-            )
+            links.append(("PDF", url_for("download", filename=pdf_name)))
 
         return render_template("result.html", excel=excel_name, pdf=pdf_name, links=links)
     except Exception as e:
         logging.getLogger("error").error(f"POST / error: {type(e).__name__}: {e}")
-        return render_template("index.html", error="OcurriÃ³ un error procesando el archivo.")
+        return render_template("index.html", error="Ocurrió un error procesando el archivo.")
 
 
 @app.route("/download/<path:filename>")
@@ -136,7 +130,7 @@ def download(filename):
     if os.path.exists(full_tmp):
         return send_from_directory(tmp, filename, as_attachment=True)
 
-    # Fallback adicional: si pidieron un 'reporte_*' inexistente, servir el mÃ¡s reciente con misma extensiÃ³n
+    # Fallback adicional: si pidieron un 'reporte_*' inexistente, servir el mÃƒÂ¡s reciente con misma extensiÃƒÂ³n
     try:
         import glob
 
