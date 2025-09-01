@@ -12,7 +12,7 @@ from .utils import ensure_dirs, stamp
 
 
 def generar_pdf(csv_path: Path) -> Path:
-    """Genera un PDF bÃ¡sico a partir del CSV y lo guarda en OUT_DIR."""
+    """Genera un PDF bÃƒÂ¡sico a partir del CSV y lo guarda en OUT_DIR."""
     ensure_dirs()
     csv_path = Path(csv_path)
     # Lectura robusta: infiere separador y hace fallback si falla
@@ -23,11 +23,11 @@ def generar_pdf(csv_path: Path) -> Path:
             # sep=None => infiere ; , \t, etc. (engine=python)
             df = pd.read_csv(csv_path, sep=None, engine="python", encoding="utf-8")
     except Exception:
-        # Fallback 1: separador ; (muy común en regiones ES)
+        # Fallback 1: separador ; (muy comÃºn en regiones ES)
         try:
             df = pd.read_csv(csv_path, sep=";", engine="python", encoding="utf-8")
         except Exception:
-            # Fallback 2: intentar como Excel por si la extensión está mal
+            # Fallback 2: intentar como Excel por si la extensiÃ³n estÃ¡ mal
             df = pd.read_excel(csv_path, engine="openpyxl")
     out_pdf = stamp("reporte", "pdf")
     doc = SimpleDocTemplate(str(out_pdf), pagesize=A4)
@@ -72,7 +72,7 @@ try:
         paths = cached_output_paths(csv_path)
         tmpdir = os.environ.get("TMPDIR", "/tmp")
         os.makedirs(tmpdir, exist_ok=True)
-        # 1) Si ya existe cache canónica, copiar a TMP y devolver
+        # 1) Si ya existe cache canÃ³nica, copiar a TMP y devolver
         if os.path.exists(paths["pdf"]):
             ts = time.strftime("%Y%m%d_%H%M%S")
             tmp = os.path.join(tmpdir, f"reporte_{ts}.pdf")
@@ -81,7 +81,7 @@ try:
                 return tmp
             except Exception:
                 return paths["pdf"]
-        # 2) Generar, guardar en cache canónica y devolver copia en TMP
+        # 2) Generar, guardar en cache canÃ³nica y devolver copia en TMP
         out = _orig_generar_pdf(csv_path)
         try:
             os.makedirs(os.path.dirname(paths["pdf"]), exist_ok=True)

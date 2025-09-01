@@ -32,7 +32,7 @@ try:
         paths = cached_output_paths(csv_path)
         tmpdir = os.environ.get("TMPDIR", "/tmp")
         os.makedirs(tmpdir, exist_ok=True)
-        # 1) Si ya existe cache canónica, copiar a TMP y devolver
+        # 1) Si ya existe cache canÃ³nica, copiar a TMP y devolver
         if os.path.exists(paths["xlsx"]):
             ts = time.strftime("%Y%m%d_%H%M%S")
             tmp = os.path.join(tmpdir, f"reporte_{ts}.xlsx")
@@ -41,7 +41,7 @@ try:
                 return tmp
             except Exception:
                 return paths["xlsx"]
-        # 2) Generar, guardar en cache canónica y devolver copia en TMP
+        # 2) Generar, guardar en cache canÃ³nica y devolver copia en TMP
         out = _orig_generar_reporte(csv_path)
         try:
             os.makedirs(os.path.dirname(paths["xlsx"]), exist_ok=True)
