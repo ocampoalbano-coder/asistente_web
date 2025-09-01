@@ -1,0 +1,33 @@
+﻿name: Smoke (prod)
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Deploy (Render)"]
+    types: [completed]
+
+jobs:
+  prod-smoke:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit /healthz
+        run: |
+          set -e
+          URL="https://asistente-web.onrender.com/healthz"
+          echo "GET $URL"
+          curl -fsS --retry 5 --retry-delay 3 --max-time 20 "$URL" | tee /tmp/healthz.json
+          grep -q '"status":"ok"' /tmp/healthz.json
+
+      - name: Hit /
+        run: |
+          set -e
+          URL="https://asistente-web.onrender.com/"
+          echo "GET $URL"
+          code=$(curl -o /tmp/root.html -w "%{http_code}" --max-time 20 -fsS "$URL")
+          test "$code" -eq 200
+          # chequeo muy básico de HTML
+          grep -qi "<html" /tmp/root.html
+
+      - name: Report OK
+        run: echo "✅ Smoke OK"
