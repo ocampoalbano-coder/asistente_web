@@ -9,3 +9,7 @@
 - Fix app.py (send_file + limpieza).
 - Nueva UI Mercury; links de descarga funcionando.
 - Limpieza de “IA” en vistas y docs.
+## v0.1.4 - 2025-09-01
+- Fix app.py (send_file restaurado).
+- UI Mercury y links Excel/PDF funcionando.
+- Limpieza de textos “IA”.
