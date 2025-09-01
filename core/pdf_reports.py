@@ -56,3 +56,46 @@ def generar_pdf(csv_path: Path) -> Path:
     story.append(table)
     doc.build(story)
     return out_pdf
+
+
+# --- caching wrapper (pdf) ---
+try:
+    import os
+    import shutil
+    import time
+
+    from .cache import cached_output_paths
+
+    _orig_generar_pdf = generar_pdf  # type: ignore[name-defined]
+
+    def generar_pdf(csv_path):  # type: ignore[func-assign]
+        paths = cached_output_paths(csv_path)
+        tmpdir = os.environ.get("TMPDIR", "/tmp")
+        os.makedirs(tmpdir, exist_ok=True)
+        # 1) Si ya existe cache canónica, copiar a TMP y devolver
+        if os.path.exists(paths["pdf"]):
+            ts = time.strftime("%Y%m%d_%H%M%S")
+            tmp = os.path.join(tmpdir, f"reporte_{ts}.pdf")
+            try:
+                shutil.copy2(paths["pdf"], tmp)
+                return tmp
+            except Exception:
+                return paths["pdf"]
+        # 2) Generar, guardar en cache canónica y devolver copia en TMP
+        out = _orig_generar_pdf(csv_path)
+        try:
+            os.makedirs(os.path.dirname(paths["pdf"]), exist_ok=True)
+            shutil.copy2(out, paths["pdf"])
+        except Exception:
+            pass
+        try:
+            ts = time.strftime("%Y%m%d_%H%M%S")
+            tmp = os.path.join(tmpdir, f"reporte_{ts}.pdf")
+            shutil.copy2(out, tmp)
+            return tmp
+        except Exception:
+            return out
+
+except Exception:
+    # No romper si algo falla: usar comportamiento original
+    pass
