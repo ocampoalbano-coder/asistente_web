@@ -44,7 +44,7 @@ def index():
             f = request.files.get("file")
             if not f or not f.filename:
                 return render_template(
-                    "index.html", error="Sube un archivo .csv o usa el botón de demo."
+                    "index.html", error="Sube un archivo .csv o usa el bot├│n de demo."
                 )
             csv_path = OUT_DIR / "upload.csv"
             f.save(str(csv_path))
@@ -59,19 +59,19 @@ def index():
                     # Autodetecta separador (;, , \t). engine=python para sep=None
                     df_in = pd.read_csv(csv_path, sep=None, engine="python", encoding="utf-8")
                 except Exception:
-                    # Fallback común en ES: punto y coma
+                    # Fallback com├║n en ES: punto y coma
                     df_in = pd.read_csv(csv_path, sep=";", engine="python", encoding="utf-8")
         except Exception:
-            # Si todo falla, intento final como Excel por si la extensión engaña
+            # Si todo falla, intento final como Excel por si la extensi├│n enga├▒a
             df_in = pd.read_excel(csv_path, engine="openpyxl")
 
-        # Validación case-insensitive
+        # Validaci├│n case-insensitive
         cols_lower = [str(c).lower() for c in df_in.columns]
         required = {"categoria", "monto"}
         if not required.issubset(set(cols_lower)):
             return render_template("index.html", error="debe tener columnas 'categoria' y 'monto'")
 
-        # Renombrar a minúsculas para uso consistente y persistir CSV normalizado
+        # Renombrar a min├║sculas para uso consistente y persistir CSV normalizado
         df_in.columns = cols_lower
         norm_csv = OUT_DIR / "norm.csv"
         df_in.to_csv(norm_csv, index=False, encoding="utf-8")
