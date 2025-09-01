@@ -1,4 +1,6 @@
-﻿# Mercury AI — Avance hasta Nivel 3
+﻿[![CI](https://github.com/ocampoalbano-coder/asistente_web/actions/workflows/ci.yml/badge.svg)](https://github.com/ocampoalbano-coder/asistente_web/actions/workflows/ci.yml)
+
+# Mercury AI — Avance hasta Nivel 3
 
 ## Estado
 - ✅ **Nivel 1:** MVP funcional (Flask + generación de Excel/PDF).
@@ -20,3 +22,4 @@
 - Despliegue gratuito (Render/Railway/PythonAnywhere) usando Gunicorn.
 - Ajustes de producción (Procfile listo, requirements verificados).
 - Opcional: empaquetar CLI y subir cobertura de tests (router/extract_entities/docs_reader).
+
