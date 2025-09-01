@@ -5,3 +5,7 @@
 - UTF-8 + lazy-load spaCy
 - Deps: xlsxwriter, pytest-cov, ruff, black
 
+## v0.1.3 - 2025-09-01
+- Fix app.py (send_file + limpieza).
+- Nueva UI Mercury; links de descarga funcionando.
+- Limpieza de “IA” en vistas y docs.
