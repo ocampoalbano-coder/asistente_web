@@ -101,3 +101,4 @@ Lo inmediato es **Nivel 4: despliegue en la nube** → ahí empieza a ser accesi
 ## Calidad & Tests
 Ver [README_TESTING.md](README_TESTING.md) para estado de tests y cobertura.
 
+

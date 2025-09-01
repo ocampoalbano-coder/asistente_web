@@ -17,3 +17,4 @@ pytest --cov=web_flask --cov=core
 1) Agregar tests a **core/docs_reader.py**, **core/extract_entities.py** y **core/router.py**.
 2) Subir cobertura global a **≥ 70%**.
 3) Tests de integración (subida CSV → genera Excel/PDF y descarga).
+
