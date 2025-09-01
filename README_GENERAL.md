@@ -97,3 +97,7 @@ Construir un **asistente web** que:
 ## 🚀 Conclusión
 Mercury AI ya es **usable en local**, tiene **tests confiables**, y el código está bajo estándares de calidad con CI automático.  
 Lo inmediato es **Nivel 4: despliegue en la nube** → ahí empieza a ser accesible para terceros sin instalar nada.
+
+## Calidad & Tests
+Ver [README_TESTING.md](README_TESTING.md) para estado de tests y cobertura.
+
