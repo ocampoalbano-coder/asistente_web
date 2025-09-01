@@ -1,0 +1,14 @@
+﻿name: Warmup (Render)
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  warmup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /healthz
+        run: |
+          curl -fsS --max-time 20 https://asistente-web.onrender.com/healthz | cat
